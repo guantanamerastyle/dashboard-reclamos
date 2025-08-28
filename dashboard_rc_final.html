@@ -1,4 +1,5 @@
 index.html
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -10,12 +11,13 @@ index.html
     :root { --turquesa: #00b2a9; --gris: #f5f7fa; }
     body { font-family: 'Montserrat', sans-serif; background: var(--gris); margin: 0; padding: 16px; }
     header { display:flex; align-items:center; gap:12px; }
-    header img { width:40px; }
-    h1 { font-size: 1.2rem; color:var(--turquesa); }
-    .export-btn { background:var(--turquesa); color:#fff; padding:10px 16px; border:none; border-radius:8px; cursor:pointer; }
+    header img { width:40px; height:auto; }
+    h1 { font-size: 1.2rem; font-weight: 600; color: var(--turquesa); }
+    .export-btn { background: var(--turquesa); color:#fff; padding:10px 16px; border:none; border-radius:8px; cursor:pointer; }
     .section { background:#fff; border-radius:10px; padding:16px; margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,.08); }
     .filters { display:flex; flex-wrap:wrap; gap:12px; }
     select { padding:6px 10px; border:1px solid #ccc; border-radius:6px; flex:1 1 120px; }
+    .chart-container { width:100%; margin-bottom:24px; }
     table { width:100%; border-collapse:collapse; font-size:.85rem; }
     th, td { padding:8px; border-bottom:1px solid #eee; text-align:left; }
     th { background:var(--turquesa); color:#fff; }
@@ -27,100 +29,4 @@ index.html
 <body>
 
 <header>
-  <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/..." alt="RC">
-  <h1>Dashboard RC Logistics – Reclamos</h1>
-</header>
-
-<button class="export-btn" onclick="window.print()">Exportar PDF</button>
-<div id="loading">Cargando datos...</div>
-
-<div class="section">
-  <h3>Resumen Ejecutivo</h3>
-  <div id="resumen"></div>
-</div>
-
-<div class="section">
-  <h3>Resumen de Cargos Pendientes</h3>
-  <div id="kpiCargos"></div>
-</div>
-
-<div class="section">
-  <div class="filters">
-    <select id="regionFilter"><option value="all">Región</option></select>
-    <select id="motivoFilter"><option value="all">Motivo</option></select>
-    <select id="estadoFilter"><option value="all">Estado</option></select>
-    <select id="anioFilter"><option value="all">Año</option></select>
-    <select id="quincenaFilter"><option value="all">Quincena</option></select>
-  </div>
-</div>
-
-<div class="section">
-  <canvas id="chartMotivo" class="chart-container"></canvas>
-  <canvas id="chartRegion" class="chart-container"></canvas>
-  <canvas id="chartTendencia" class="chart-container"></canvas>
-</div>
-
-<div class="section">
-  <table id="tablaReclamos">
-    <thead>
-      <tr>
-        <th>ID Ticket</th>
-        <th>Región</th>
-        <th>Motivo</th>
-        <th>Monto</th>
-        <th>Estado</th>
-        <th>Periodo</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-
-<script>
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSr0Z-Ni3tzymDurNusWfsyWTeAAEmc9mNGJLQ7TRk6MUhMYsphP4TA7FiOGxzSae4tKu-z0XCRvAl7/pub?output=csv';
-
-let datos = [];
-
-async function cargarDatos() {
-  try {
-    const res = await fetch(CSV_URL);
-    const text = await res.text();
-    const rows = text.split('\n').slice(1).map(r => {
-      const cols = r.split(',').map(c => c.replace(/"/g, '').trim());
-      return {
-        id: cols[0],
-        tema: cols[1],
-        region: cols[11] || 'Sin región',
-        motivo: cols[8] || 'Sin motivo',
-        monto: parseFloat(cols[6]) || 0,
-        estado: cols[5] || 'Sin estado',
-        periodo: cols[12] || 'Sin periodo'
-      };
-    });
-    datos = rows.filter(r => r.id);
-    renderTodo(datos);
-  } catch (e) {
-    document.getElementById('loading').innerHTML = 'Error al cargar datos. Verifica que el archivo esté publicado.';
-  }
-}
-
-function renderTodo(data) {
-  document.getElementById('loading').style.display = 'none';
-
-  const total = data.length;
-  const totalMonto = data.reduce((a, b) => a + b.monto, 0);
-  const topMotivos = [...new Set(data.map(d => d.motivo))].slice(0, 3);
-  const topRegion = [...new Set(data.map(d => d.region))][0] || 'N/A';
-
-  document.getElementById('resumen').innerHTML = `
-    <p>✅ <strong>${total}</strong> reclamos (${totalMonto.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })})</p>
-    <p>Top motivos: ${topMotivos.join(', ')}</p>
-    <p>Región principal: ${topRegion}</p>
-  `;
-}
-
-cargarDatos();
-</script>
-
-</body>
-</html>
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABlUExURUxpcf///wAAAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP8AAP
